@@ -15,7 +15,8 @@ int main(void)
     return -1;
 
   // Create a GLFW window containing a OpenGL context
-  window = glfwCreateWindow(500, 500, "Hello OpenGL", NULL, NULL);
+  //800,800
+  window = glfwCreateWindow(800, 800, "khjkhjkhj", NULL, NULL);
   if (!window)
   {
     glfwTerminate();
@@ -35,7 +36,8 @@ int main(void)
   // Init OpenGL
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
-  glClearColor(0.5, 0.5, 0.5, 1.0);
+  //change color?
+  glClearColor(1.0, 1.0, 1.0, 1.0);
 
 
   // Loop until the user closes the window

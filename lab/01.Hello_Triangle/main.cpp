@@ -12,42 +12,44 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// 쉐이더 관련 변수 및 함수
 ////////////////////////////////////////////////////////////////////////////////
-GLuint  program;          // 쉐이더 프로그램 객체의 레퍼런스 값
-GLint   loc_a_position;   // attribute 변수 a_position 위치
-GLint   loc_a_color;      // attribute 변수 a_color 위치
+GLuint program;       // 쉐이더 프로그램 객체의 레퍼런스 값
+GLint loc_a_position; // attribute 변수 a_position 위치
+GLint loc_a_color;    // attribute 변수 a_color 위치
 
-GLuint  position_buffer;  // GPU 메모리에서 position_buffer의 위치
-GLuint  color_buffer;     // GPU 메모리에서 color_buffer의 위치
+GLuint position_buffer; // GPU 메모리에서 position_buffer의 위치
+GLuint color_buffer;    // GPU 메모리에서 color_buffer의 위치
 
-GLuint create_shader_from_file(const std::string& filename, GLuint shader_type);
+GLuint create_shader_from_file(const std::string &filename, GLuint shader_type);
 void init_shader_program();
 ////////////////////////////////////////////////////////////////////////////////
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// 렌더링 관련 변수 및 함수
 ////////////////////////////////////////////////////////////////////////////////
 // per-vertex 3D positions (x, y, z)
 GLfloat g_position[] = {
-  0.5f,  0.5f,  0.0f,          // 0th vertex position
-  -0.5f, -0.5f,  0.0f,          // 1st vertex position
-  0.5f, -0.5f,  0.0f,          // 2nd vertex position
+    0.5f, 0.5f, 0.0f,   // 0th vertex position
+    -0.5f, -0.5f, 0.0f, // 1st vertex position
+    0.5f, -0.5f, 0.0f,  // 2nd vertex position
 };
 
 // per-vertex RGB color (r, g, b)
+// GLfloat g_color[] = {
+//   1.0f, 0.0f, 0.0f,             // 0th vertex color (red)
+//   1.0f, 0.0f, 0.0f,             // 1st vertex color (red)
+//   1.0f, 0.0f, 0.0f,             // 2nd vertex color (red)
+// };
 GLfloat g_color[] = {
-  1.0f, 0.0f, 0.0f,             // 0th vertex color (red)
-  1.0f, 0.0f, 0.0f,             // 1st vertex color (red)
-  1.0f, 0.0f, 0.0f,             // 2nd vertex color (red)
+    1.0f, 0.0f, 0.0f, //    0th    vertex    color    (red)
+    0.0f, 1.0f, 0.0f, //    1st    vertex    color    (green)
+    0.0f, 0.0f, 1.0f, //    2nd    vertex    color    (blue)
 };
-
-void init_buffer_objects();     // VBO init 함수: GPU의 VBO를 초기화하는 함수.
-void render_object();           // rendering 함수: 물체(삼각형)를 렌더링하는 함수.
+void init_buffer_objects(); // VBO init 함수: GPU의 VBO를 초기화하는 함수.
+void render_object();       // rendering 함수: 물체(삼각형)를 렌더링하는 함수.
 ////////////////////////////////////////////////////////////////////////////////
 
-
 // GLSL 파일을 읽어서 컴파일한 후 쉐이더 객체를 생성하는 함수
-GLuint create_shader_from_file(const std::string& filename, GLuint shader_type)
+GLuint create_shader_from_file(const std::string &filename, GLuint shader_type)
 {
   GLuint shader = 0;
 
@@ -57,20 +59,20 @@ GLuint create_shader_from_file(const std::string& filename, GLuint shader_type)
   std::string shader_string;
 
   shader_string.assign(
-    (std::istreambuf_iterator<char>(shader_file)),
-    std::istreambuf_iterator<char>());
+      (std::istreambuf_iterator<char>(shader_file)),
+      std::istreambuf_iterator<char>());
 
   // Get rid of BOM in the head of shader_string
   // Because, some GLSL compiler (e.g., Mesa Shader compiler) cannot handle UTF-8 with BOM
-  if (shader_string.compare(0, 3, "\xEF\xBB\xBF") == 0)  // Is the file marked as UTF-8?
+  if (shader_string.compare(0, 3, "\xEF\xBB\xBF") == 0) // Is the file marked as UTF-8?
   {
     std::cout << "Shader code (" << filename << ") is written in UTF-8 with BOM" << std::endl;
     std::cout << "  When we pass the shader code to GLSL compiler, we temporarily get rid of BOM" << std::endl;
-    shader_string.erase(0, 3);                  // Now get rid of the BOM.
+    shader_string.erase(0, 3); // Now get rid of the BOM.
   }
 
-  const GLchar* shader_src = shader_string.c_str();
-  glShaderSource(shader, 1, (const GLchar * *)& shader_src, NULL);
+  const GLchar *shader_src = shader_string.c_str();
+  glShaderSource(shader, 1, (const GLchar **)&shader_src, NULL);
   glCompileShader(shader);
 
   GLint is_compiled;
@@ -97,14 +99,12 @@ GLuint create_shader_from_file(const std::string& filename, GLuint shader_type)
 // vertex shader와 fragment shader를 링크시켜 program을 생성하는 함수
 void init_shader_program()
 {
-  GLuint vertex_shader
-    = create_shader_from_file("./shader/vertex.glsl", GL_VERTEX_SHADER);
+  GLuint vertex_shader = create_shader_from_file("./shader/vertex.glsl", GL_VERTEX_SHADER);
 
   std::cout << "vertex_shader id: " << vertex_shader << std::endl;
   assert(vertex_shader != 0);
 
-  GLuint fragment_shader
-    = create_shader_from_file("./shader/fragment.glsl", GL_FRAGMENT_SHADER);
+  GLuint fragment_shader = create_shader_from_file("./shader/fragment.glsl", GL_FRAGMENT_SHADER);
 
   std::cout << "fragment_shader id: " << fragment_shader << std::endl;
   assert(fragment_shader != 0);
@@ -144,13 +144,11 @@ void init_buffer_objects()
   /////////////////////////////////////////////////////////////////////
   /// TODO: CPU 메모리에서 GPU 메모리로 물체의 데이터를 전송하는 부분 - BEGIN
   /////////////////////////////////////////////////////////////////////
-  
 
   /////////////////////////////////////////////////////////////////////
   /// TODO: CPU 메모리에서 GPU 메모리로 물체의 데이터를 전송하는 부분 - END
   /////////////////////////////////////////////////////////////////////
 }
-
 
 // object rendering: 현재 scene은 삼각형 하나로 구성되어 있음.
 void render_object()
@@ -187,10 +185,9 @@ void render_object()
   glUseProgram(0);
 }
 
-
 int main(void)
 {
-  GLFWwindow* window;
+  GLFWwindow *window;
 
   // Initialize GLFW library
   if (!glfwInit())
@@ -222,7 +219,6 @@ int main(void)
   init_shader_program();
 
   // TODO: GPU의 VBO를 초기화하는 함수 호출
-  
 
   // Loop until the user closes the window
   while (!glfwWindowShouldClose(window))
